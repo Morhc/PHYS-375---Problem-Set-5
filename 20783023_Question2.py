@@ -12,18 +12,23 @@ from matplotlib import pyplot as plt
 from matplotlib import rc
 rc('text', usetex=True)
 
-def part_ab(a_path="", b_path=""):
+def part_abd(a_path="", b_path="", d_path=""):
     """(a) Plots log10(R/10^3m) as a function of log10(M/Msun) over 0.01 < M/Msun < 5 and showing where
        we would find White Dwarfs, Neutron Stars, and Black Holes.
        (b) Plots on top of the figure with the average density line.
+       (d) Plots the revolution against the mass of the object.
     INPUTS:
         a_path - Where to save the (a) plot.
         b_path - Where to save the (b) plot.
+        d_path - Where to save the (d) plot.
     OUTPUTS:
         (a) Plots the radius against the mass and identifies where to find white dwarfs, neutron stars,
         and black holes.
-        (b) Plots the average density over this.
+        (b) Plots the average density over plot (a).
+        (d) Plots the revolutions against the mass of the object.
     """
+
+    ## PART A
 
     #M/Msun
     Mratio = np.linspace(0.01, 5, 10000)[1:-2] #since the range does not include 0.01 and 5.
@@ -66,6 +71,7 @@ def part_ab(a_path="", b_path=""):
 
     plt.close('all')
 
+    ## PART B
 
     rhosun = 1.5e5 * 1e9 #the density of the sun in km
     Msun = 1.989e30
@@ -97,8 +103,34 @@ def part_ab(a_path="", b_path=""):
 
     plt.close('all')
 
-    return Mratio, WD, NS, BH, Rwd, Rns, Rbh
+    ## PART D
 
+    def calc_rev(M, R):
+        """Equation 2.1 in my solution set"""
+        return 373.5/(M*R**2)
+
+    num = 1 #number of black hole points
+    ANGwd = calc_rev(WD, Rwd)
+    ANGns = calc_rev(NS, Rns)
+    ANGbh = calc_rev(BH[:num], Rbh[:num])
+
+
+    plt.title(r'$log_{10}$($\omega$) vs $log_{10}$($\frac{M}{M_\odot}$)')
+    plt.ylabel(r'$log_{10}(\omega$ [rev/min]$)$')
+    plt.xlabel(r'$log_{10}(\frac{M}{M_\odot})$')
+    plt.plot(np.log10(WD), np.log10(ANGwd), label='White Dwarf')
+    plt.plot(np.log10(NS), np.log10(ANGns), label='Neutron Star')
+    plt.scatter(np.log10(BH[:num]), np.log10(ANGbh), s=10, edgecolor='black', color='purple', label='Black Hole')
+
+    plt.xlim(np.log10(Mratio[0]), np.log10(Mratio[-1]))
+
+    lgd = plt.legend(bbox_to_anchor=(1.02, 1.02))
+
+    if d_path != '':
+        plt.savefig(d_path, bbox_extra_artists=(lgd,), bbox_inches='tight')
+    else: plt.show()
+
+    plt.close('all')
 
 def main():
 
