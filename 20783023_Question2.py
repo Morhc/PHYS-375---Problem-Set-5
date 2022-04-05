@@ -28,7 +28,8 @@ def part_ab(a_path="", b_path=""):
     #M/Msun
     Mratio = np.linspace(0.01, 5, 10000)[1:-2] #since the range does not include 0.01 and 5.
 
-    WD = Mratio[Mratio < 1.44] #because of the Chandrasekhar mass
+    WD = Mratio[0.08 < Mratio] #the Schoenberg-Chandrasekhar limit
+    WD = WD[WD < 1.44] #the Chandrasekhar limit
     #from Ryden 18.51 where 3Msun is the accepted maximum mass of a NS
     NS = Mratio[1.44 < Mratio]
     NS = NS[NS < 3]
@@ -51,6 +52,8 @@ def part_ab(a_path="", b_path=""):
     plt.plot(np.log10(NS), np.log10(Rns), label='Neutron Star')
     plt.plot(np.log10(BH), np.log10(Rbh), label='Black Hole')
 
+    plt.xlim(np.log10(Mratio[0]), np.log10(Mratio[-1]))
+
     lgd = plt.legend(bbox_to_anchor=(1.02, 1.02))
 
     #the region dividers
@@ -65,8 +68,8 @@ def part_ab(a_path="", b_path=""):
 
 
     rhosun = 1.5e5 * 1e9 #the density of the sun in km
-    #Using DERIVED EQUATION
     Msun = 1.989e30
+    #rho = M/V
     Rcores = np.power(Msun*Mratio/(4*np.pi*rhosun/3), 1/3)
 
 
@@ -77,6 +80,8 @@ def part_ab(a_path="", b_path=""):
     plt.plot(np.log10(NS), np.log10(Rns), label='Neutron Star')
     plt.plot(np.log10(BH), np.log10(Rbh), label='Black Hole')
     plt.plot(np.log10(Mratio), np.log10(Rcores), label='Star Cores')
+
+    plt.xlim(np.log10(Mratio[0]), np.log10(Mratio[-1]))
 
 
     lgd = plt.legend(bbox_to_anchor=(1.02, 1.02))
@@ -92,14 +97,17 @@ def part_ab(a_path="", b_path=""):
 
     plt.close('all')
 
+    return Mratio, WD, NS, BH, Rwd, Rns, Rbh
+
 
 def main():
 
     here = os.path.dirname(os.path.realpath(__file__))
 
-    a_path = os.path.join(here, 'PS2-Q2a.png')
-    b_path = os.path.join(here, 'PS2-Q2b.png')
-    part_ab(a_path, b_path)
+    a_path = os.path.join(here, 'PS5-Q2a.png')
+    b_path = os.path.join(here, 'PS5-Q2b.png')
+    d_path = os.path.join(here, 'PS5-Q2d.png')
+    part_abd(a_path, b_path, d_path)
 
 if __name__ == '__main__':
     main()
